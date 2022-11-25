@@ -1,14 +1,14 @@
-#修改TNAME: K2P-5.0 中的K2P-5.0为你需要编译的型号，注意名称要与configs/templates/目录下的名字相同
-name: Build Padavan 1126
+#修改TNAME: K2P-5.0 中的K2P-5.0为你需要编译的型号，注意名称要与configs/templates/目录下的名字相同.
+name: Build k2p
 
 on: 
   release:
     types: [published]
   push:
     tags:
-    - 'v*'
-  #  branches: 
-  #    - master
+       - 'v*'
+    branches: 
+       - master
 #  schedule:
 #    - cron: 0 8 * * 5
  # watch:
@@ -16,7 +16,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
 
     steps:
     - name: Checkout
@@ -25,13 +25,13 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
-        #sudo apt-get update
+        sudo apt-get update
         sudo apt-get -y install unzip libtool-bin curl cmake gperf gawk flex bison nano xxd \
         cpio git python-docutils gettext automake autopoint texinfo build-essential help2man \
         pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev gcc-multilib
     - name: Clone source code
       run: |
-        git clone --depth=1 https://github.com/trihelm/rt-n56u.git /opt/rt-n56u
+        git clone --depth=1 https://github.com/trihelm/hanwckf5041.git /opt/rt-n56u
         cd /opt/rt-n56u/toolchain-mipsel
         mkdir -p toolchain-3.4.x
         wget https://github.com/hanwckf/padavan-toolchain/releases/download/v1.0/mipsel-linux-uclibc.tar.xz
@@ -39,14 +39,16 @@ jobs:
         mkdir -p /opt/images/
     - name: Build Firmware
       env:
-        TNAME: K2P
+        TNAME: K2P-USB-5.0
       run: |
         cd /opt/rt-n56u/trunk
+        ls -a configs/templates
         if [ ! -f configs/templates/$TNAME.config ] ; then
         echo "configs/templates/$TNAME.config not found "
         exit 1
         fi
         cp -f configs/templates/$TNAME.config .config
+
         ################################################################################################
         #因不同型号配置功能不一样，所以先把配置项删除，如果你自己要添加其他的，也要写上删除这一条，切记！！！
         ################################################################################################
@@ -110,10 +112,14 @@ jobs:
         #格式如下：
         #sed -i '/自定义项/d' .config
         #echo "自定义项=y" >> .config
-        #########################################################################################
+        #########################################################################################      
+ 
         sudo ./clear_tree
-        sudo ./build_firmware_bkye $TNAME
+        sudo ./build_firmware_modify $TNAME kmod
         sudo mv -f images/*.trx /opt/images/
+        # sudo ./clear_tree
+        # sudo ./build_firmware_bkye $TNAME
+        # sudo mv -f images/*.trx /opt/images/
     - name : Upload packages
       uses: actions/upload-artifact@master
       if: always()
