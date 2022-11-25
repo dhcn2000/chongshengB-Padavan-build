@@ -1,5 +1,5 @@
-#修改TNAME: K2P 中的K2P为你需要编译的型号，注意名称要与configs/templates/目录下的名字相同
-name: Build Padavan 1126
+#修改TNAME: K2P-5.0 中的K2P-5.0为你需要编译的型号，注意名称要与configs/templates/目录下的名字相同
+name: Build Padavan
 
 on: 
   release:
@@ -17,7 +17,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: github.event.repository.owner.id == github.event.sender.id
+
     steps:
     - name: Checkout
       uses: actions/checkout@master
@@ -31,7 +31,7 @@ jobs:
         pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev gcc-multilib
     - name: Clone source code
       run: |
-        git clone --depth=1 https://github.com/dhcn2000/chongshengB-rt-n56u.git /opt/rt-n56u
+        git clone --depth=1 https://github.com/trihelm/rt-n56u.git /opt/rt-n56u
         cd /opt/rt-n56u/toolchain-mipsel
         mkdir -p toolchain-3.4.x
         wget https://github.com/hanwckf/padavan-toolchain/releases/download/v1.0/mipsel-linux-uclibc.tar.xz
@@ -39,7 +39,7 @@ jobs:
         mkdir -p /opt/images/
     - name: Build Firmware
       env:
-        TNAME: "K2P"
+        TNAME: "K2P-USB-5.0"
       run: |
         cd /opt/rt-n56u/trunk
         if [ ! -f configs/templates/$TNAME.config ] ; then
